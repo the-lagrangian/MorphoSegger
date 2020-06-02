@@ -331,7 +331,7 @@ if fociCalc
     noiseTh=8;       % Noise threshold for wavelet detection
 
     disp('Running Foci Analysis...')
-    run_fociAnalysis(dirname,paramFit,5,Dparameter,exp_cut,noiseTh)
+    run_fociAnalysis(dirname,paramFit,CONST.getLocusTracks.TimeStep,Dparameter,exp_cut,noiseTh)
 
 end
 %% Shutting down parallel pool
