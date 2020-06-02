@@ -171,14 +171,15 @@ if supersegger
 %% Segmentation Filtering options in SuperSegger (modify if you see problems in detection)
 
     %The first two options (PEBBLE_CONST, INTENSITY_DIF) are for the remove_debris variable. 
-    CONST.superSeggerOpti.PEBBLE_CONST = 1.3; %Default 1.5 for 60XEcM9
-    CONST.superSeggerOpti.INTENSITY_DIF = 0.3; %Default 0.15 for 60XEcM9
-    CONST.superSeggerOpti.remove_microcolonies =false; %Default is 1. It prevents deleting clusters of cells.
-    CONST.superSeggerOpti.remove_debris = 1; %Turn off it is deleting cells
-    CONST.superSeggerOpti.MAX_WIDTH = 1e15; %Set this high to prevent filaments to be split 
-    CONST.seg.OPTI_FLAG = false; %To avoid segmenting cells by shape
-    CONST.regionOpti.MIN_LENGTH = 10; %Min length of cell
-    CONST.superSeggerOpti.MAGIC_RADIUS = 22;
+    CONST.superSeggerOpti.PEBBLE_CONST = 1.3;          %Useful for removing debris
+    CONST.superSeggerOpti.INTENSITY_DIF = 0.3;         %Useful for removing debris
+    CONST.superSeggerOpti.remove_microcolonies =false; %Deletes clusters of cells. 
+    CONST.superSeggerOpti.remove_debris = 1;           %Deletes debris and bubbles
+    CONST.superSeggerOpti.MAX_WIDTH = 1e15;            %It sets cell length to split cells
+    CONST.superSeggerOpti.MAGIC_RADIUS = 22;           %Contrast enhancement. Deletes areas between cells 
+    CONST.seg.OPTI_FLAG = false;                       %Segments cells by shape
+    CONST.regionOpti.MIN_LENGTH = 10;                  %Minimum length of cells
+    CONST.trackOpti.MIN_AREA=80;                       %Threshold to filter small particles
 
 
     % this helps cleanup death cells, fragments etc..
