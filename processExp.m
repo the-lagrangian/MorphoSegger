@@ -349,5 +349,3 @@ load('handel') %alarm that the code is finished
 sound(y,Fs)
 
 end
-
-
