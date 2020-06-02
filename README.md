@@ -1,6 +1,7 @@
-![alt text](https://github.com/batflorez/MorphoSegger_v1/blob/master/Morphometrics_v2/Morphometrics_GUI/morphometrics_v2_icon.JPG?raw=true) 
 
-# MorphoSegger 
+![alt text](https://github.com/batflorez/MorphoSegger_v1/blob/master/Morphometrics_v2/Morphometrics_GUI/morphometrics_v2_icon.JPG?raw=true)
+
+# MorphoSegger   
 
 MorphoSegger is a Matlab package for imaging analysis of bacterial cells that combines two powerlful tools, [SuperSegger](https://github.com/wiggins-lab/SuperSegger/wiki) and [Morphometrics](https://simtk.org/projects/morphometrics). SuperSegger provides machine-learning based segmentation (with training GUI, foci and fluorescence analysis) and Morphometrics that interpolates contours at subpixel resolution for robust cell size and morphology estimation. [Fiji](https://fiji.sc/) macros are integrated in Matlab through [MIJ](http://bigwww.epfl.ch/sage/soft/mij/) to expand the range of tools for pre-processing and analysis. This tool is most suited for analysis of bacteria in agar pads or [CellASIC ONIX](https://www.emdmillipore.com/US/en/life-science-research/cell-culture-systems/cellASIC-live-cell-analysis/microfluidic-plates/68eb.qB.wfkAAAFBWmVb3.sJ,nav#bacteria-cells) platforms. 
 
@@ -119,3 +120,5 @@ Please make sure to update tests as appropriate.
 
 ## License
 
+[![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)  
+**[MIT license](http://opensource.org/licenses/mit-license.php)**
