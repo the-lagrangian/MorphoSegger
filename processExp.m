@@ -20,7 +20,7 @@
 
 %%  MODIFY PIPELINE ACCORDING TO EXPERIMENT SETTINGS AND SAVE IT IN EXPERIMENT FOLDER
 
-function processExp(preprocess,naming,supersegger,cleanup,imag2stack,morpho,fociCalc)
+function processExp_glucose(preprocess,naming,supersegger,cleanup,imag2stack,morpho,fociCalc)
 
 % Steps of the pipeline: 
 %Boolean variables to decide which steps of the pipeline to run:
@@ -143,7 +143,7 @@ if supersegger
 
     % Constants Calarco Microscope:
     CONST.imAlign.Phase     = [ 0.0000    0.0000    0.0000    0.0000];
-    CONST.imAlign.GFP       = [ 0.0000    0.0000    0.0000    0.0000];
+    CONST.imAlign.GFP       = [ 0.0000    0.0000    1.0000    1.0000];
     CONST.imAlign.mCherry   = [0.04351   -0.0000    0.7200    0.5700]; 
     CONST.imAlign.DAPI      = [0.0000     0.0000    0.0000    0.0000]; 
 
@@ -176,10 +176,9 @@ if supersegger
     CONST.superSeggerOpti.remove_microcolonies =false; %Default is 1. It prevents deleting clusters of cells.
     CONST.superSeggerOpti.remove_debris = 1; %Turn off it is deleting cells
     CONST.superSeggerOpti.MAX_WIDTH = 1e15; %Set this high to prevent filaments to be split 
-    CONST.superSeggerOpti.MAGIC_RADIUS = 7; % radius of contrast enhancement. deletes areas between cells 
     CONST.seg.OPTI_FLAG = false; %To avoid segmenting cells by shape
-    CONST.regionOpti.MIN_LENGTH = 0; % min length of cells
-    CONST.trackOpti.MIN_AREA=80; %filter small particles
+    CONST.regionOpti.MIN_LENGTH = 10; %Min length of cell
+    CONST.superSeggerOpti.MAGIC_RADIUS = 22;
 
 
     % this helps cleanup death cells, fragments etc..
@@ -295,7 +294,7 @@ if morpho
     params.v_method = 3;        % 1 = Gradient Segmentation; 2 = Laplacian Segmentation; 
                                 % 3 = Adaptive Threshold Segmentation; 4 = Canny Segmentation
     params.v_simplethres=1;     % Simple threshold 
-    params.f_areamin = 10;     % Min region size
+    params.f_areamin = 90;     % Min region size
     params.f_areamax = 200000;  % Max region size
     params.v_prox = 0;          % Cells are in proximity
     params.v_exclude=0;         % Exclude edge objects
@@ -311,7 +310,8 @@ if morpho
 
     disp('Running Morphometrics in parallel...')
     run_parallel(dirname,params);
-
+    %cleanMorphometrics(dirname)
+    
 end
 
 %% 7. Foci calculation - Diego's pipeline
@@ -324,13 +324,13 @@ if fociCalc
      end
      
     %Parameters    
-    paramFit=50;     % number of time points to pick cells (consecutive growth)
+    paramFit=30;     % Consecutive points for a single cell to include the trajectory
     Dparameter=65;   % Threshold to detect if it is foci in Diego's algorithm
-    exp_cut=65;      % initial length of cell for exponential fit (pixels)
+    exp_cut=20;      % Takes only 65 pixels onwards to fit the exponential. Those points are not included in the gc_fit plot but the fit itself starts on point 65
     noiseTh=8;       % Noise threshold for wavelet detection
 
     disp('Running Foci Analysis...')
-    run_fociAnalysis(dirname,paramFit,CONST.getLocusTracks.TimeStep,Dparameter,exp_cut,noiseTh)
+    run_fociAnalysis(dirname,paramFit,5,Dparameter,exp_cut,noiseTh)
 
 end
 %% Shutting down parallel pool
@@ -346,6 +346,7 @@ disp(['Finished in ' num2str(round(10*t1/60)/10) ' minutes.']);
 
 load('handel') %alarm that the code is finished
 sound(y,Fs)
+
 end
 
 
