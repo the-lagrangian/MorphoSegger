@@ -1,4 +1,5 @@
-function [nfoci] = wavelet_foci(rawData,rawData1)
+function mask = wavelet_foci2(rawData,noiseTh)
+
 % Script to run SMT_spotDetect on a stack IP(:, :, x) with x planes. 
 % Comments below is valid for cell population images 
 %
@@ -52,13 +53,12 @@ function [nfoci] = wavelet_foci(rawData,rawData1)
 
 
 IP = rawData(:, :, :);
-IP1 = rawData1(:, :, :);
+%IP1 = rawData1(:, :, :);
 
 display = true;
 plane = 2;
 do_noiseROI = false;
 do_autoDetectColony = false;
-noiseTh = 8;
 
 %%
 points = [];
@@ -77,42 +77,42 @@ for ind=1:size(IP, 3)
     if do_noiseROI & do_autoDetectColony
         error('initiateSpotDetect: You can only use one way of selecting ROI.')
     elseif do_noiseROI
-        [mask, n]=SMT_spotDetect(IP1(:, :, ind), 'Plane', plane, 'actualPlaneNoise', 'noiseTH', noiseTh, 'noiseROI', noiseROI);
+        [mask, n]=SMT_spotDetect(IP(:, :, ind), 'Plane', plane, 'actualPlaneNoise', 'noiseTH', noiseTh, 'noiseROI', noiseROI);
     elseif do_autoDetectColony
-        [mask, n]=SMT_spotDetect(IP1(:, :, ind), 'Plane', plane, 'actualPlaneNoise', 'noiseTH', noiseTh, 'autoDetectColony');
+        [mask, n]=SMT_spotDetect(IP(:, :, ind), 'Plane', plane, 'actualPlaneNoise', 'noiseTH', noiseTh, 'autoDetectColony');
     else
-        [mask, n]=SMT_spotDetect(IP1(:, :, ind), 'Plane', plane, 'actualPlaneNoise', 'noiseTH', noiseTh);
+        [mask, n]=SMT_spotDetect(IP(:, :, ind), 'Plane', plane, 'actualPlaneNoise', 'noiseTH', noiseTh);
     end
     
-    stats = regionprops(mask, IP(:, :, ind), 'WeightedCentroid');
-    for ind2=1:length(stats)
-        coord=stats(ind2).WeightedCentroid;
-        coords = [coords; coord, ind];
-    end
-    
-    if display %&& ind == 24;
-%         figure;
-%         hold on
-%         imagesc(IP(:, :, ind));
-%         colormap(gray)
-%         for ind2=1:length(stats)
-%             hold on
-%             coord=stats(ind2).WeightedCentroid;
-%             circle(coord(1), coord(2), 5);
-%         end
-%         hold off
-    end 
-    
-    points=[points n];
-end
-% figure; plot(points)
-nfoci=size(coords,1);
-
-clear 'coord' 'stats' 'display' 'ind' 'ind2' 'n' 'IP';
-
-u_c=coords(all(~isnan(coords),2),:);
-
-nfoci=size(u_c,1);
+%     stats = regionprops(mask, IP(:, :, ind), 'WeightedCentroid');
+%     for ind2=1:length(stats)
+%         coord=stats(ind2).WeightedCentroid;
+%         coords = [coords; coord, ind];
+%     end
+%     
+%     if display %&& ind == 24;
+% %         figure;
+% %         hold on
+% %         imagesc(IP(:, :, ind));
+% %         colormap(gray)
+% %         for ind2=1:length(stats)
+% %             hold on
+% %             coord=stats(ind2).WeightedCentroid;
+% %             circle(coord(1), coord(2), 5);
+% %         end
+% %         hold off
+%     end 
+%     
+%     points=[points n];
+% end
+% % figure; plot(points)
+% nfoci=size(coords,1);
+% 
+% clear 'coord' 'stats' 'display' 'ind' 'ind2' 'n' 'IP';
+% 
+% u_c=coords(all(~isnan(coords),2),:);
+% 
+% nfoci=size(u_c,1);
 
 end
 

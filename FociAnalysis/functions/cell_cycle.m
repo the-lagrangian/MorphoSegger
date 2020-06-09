@@ -22,26 +22,28 @@ tb32=0;
 
 tb=zeros(1,length(foci));
 tc=zeros(1,length(foci));
-%tc2=zeros(1,length(foci));
+
 
 
 foci4=zeros(1,length(foci));
 
-foci2=foci3_N;
 
-foci3=foci2;
 
+
+cero=foci==0;
+foci3_N(cero)=0;
+foci2=foci;
 
 aux_g=0;
 
 
-cont=1;            
+
+abc=1;
 
             for i=2:1:length(foci)-2
                 
                     if isnan(foci2(i)==1)
                         
-                        cont=cont+1;   
                         
                         continue   
 
@@ -49,13 +51,50 @@ cont=1;
                 
                     if aux_g==0
 
-        
+                            
+                    if abc<=5
+                        
                     
-                            if (foci2(i)>=1) && (foci2(i)<=3)
+                            if (foci2(i)>=1) && (foci2(i)<3)
 
 
 
-                                    if (foci2(i+1)>3) && (foci2(i+1)<=5)
+                                    if (foci2(i+1)>=3) && (foci2(i+1)<=5)
+
+                                        aux_g=2;
+                                        
+                                        continue
+
+                                    end    
+
+
+                            end    
+
+
+                            if foci(i)==0 
+
+                                    foci3_N(i)=1;
+                                    foci2(i)=1;
+
+
+                            end
+
+                           if length(find(foci2>=1 & foci2<=2))<4
+
+                                aux_g=2;
+                                
+                                continue
+                           end
+                           
+                           abc=abc+1;
+                           
+                    else
+                        
+                            if (foci2(i)>=1) && (foci2(i)<3)
+
+
+
+                                    if (foci2(i+1)>=3) && (foci2(i+1)<=5)
 
                                         aux_g=2;
                                         
@@ -73,7 +112,7 @@ cont=1;
                                     foci2(i)=0;
 
 
-                                    if (foci2(i+1)>3) && (foci2(i+1)<=5)
+                                    if (foci2(i+1)>=3) && (foci2(i+1)<=5)
 
                                         aux_g=2;
 
@@ -90,8 +129,10 @@ cont=1;
                                 continue
                            end
                         
-                        
-                   end                 
+                   end    
+                    
+                    
+                   end
                 
 
 
@@ -279,9 +320,9 @@ cont=1;
             %%%%%%x=[1:length(foci)];
             %%%%%%foci_n=fit_s(x)';
             
-            [fit_s1, ~]=createFit_smoothingspline(foci,0.975);
+            [fit_s1, ~]=createFit_smoothingspline(foci2,0.975);
 
-            x=[1:length(foci3)];
+            x=[1:length(foci2)];
             foci_n1=fit_s1(x)';
             
             [fit_s2, ~]=createFit_smoothingspline(foci3_N,0.975);
@@ -295,15 +336,15 @@ cont=1;
             
             foci_n(aux_z)=NaN;
             
-            aux=find(foci3_N==0);
+            aux=find(foci2==0);
             foci_n(aux)=0;
             
             aux_g=0;
             
-            cont=1;    
+            
             
   
-            for i=2:1:length(foci)-2
+            for i=2:1:length(foci)-3
                 
                 
                 if isnan(foci_n(i)==1)
@@ -320,19 +361,21 @@ cont=1;
 
                             tc2=tc2+1;
                                 
-                            if (foci_n(i+1)>2.75) && (foci2(i+1)<=5.25)
+                            if (foci_n(i+1)>2.75) && (foci_n(i+1)<=5.25)
                                 
-                                if (foci_n(i+2)>2.75) && (foci2(i+2)<=5.25)
+                                if (foci_n(i+2)>2.75) && (foci_n(i+2)<=5.25)
+                                    
+                                        
+                                     aux_g=2;
                                 
-                                aux_g=2;
-                                
-                                continue
-                                
+                                     continue  
+
                                 
                                 end
                                         
-                            end    
-                                
+                            end
+                            
+                           
                                 
                      end    
 
@@ -342,7 +385,7 @@ cont=1;
                             
                             
                                 
-                            if (foci_n(i+1)>2.75) && (foci2(i+1)<=5.5)
+                            if (foci_n(i+1)>2.75) && (foci_n(i+1)<=5.5)
 
                                 aux_g=2;
                                 
@@ -350,10 +393,10 @@ cont=1;
 
                             end
                             
-                            if (foci_n(i+1)>0.75) && (foci2(i+1)<=2.75)
+                            if (foci_n(i+1)>0.75) && (foci_n(i+1)<=2.75)
                                      
                                 
-                                     if (foci_n(i-1)>0.75) && (foci2(i-1)<=2.75)
+                                     if (foci_n(i-1)>0.75) && (foci_n(i-1)<=3)
                                      tb2=tb2-1;
                                      tc2=tc2+1;
                                      end
@@ -389,10 +432,12 @@ cont=1;
 
                             tc4=tc4+1;
                             
-                            if (foci_n(i+1)>5.5) && (foci2(i+1)<9)
+                            
+                            
+                            if (foci_n(i+1)>5.5) && (foci_n(i+1)<9)
                                      
                                 
-                                     if (foci_n(i+2)>=5.5) && (foci2(i+2)<11)
+                                     if (foci_n(i+2)>=5.5) && (foci_n(i+2)<11)
                                      
                                          aux_g=4;
                                      
@@ -405,11 +450,29 @@ cont=1;
                     end    
 
                     if foci_n(i)==0 
+                        
+                            if foci_n(i+1)~=0
              
+                                if foci_n(i+2)==0
+                                  
+                                    foci_n(i+1)=0;
+                                end    
                             
+                            end
+                        
+                            
+                            if foci_n(i-1)>0.75 && foci_n(i-1)<=2.75
+             
+                            aux_g=0;
+                                     
+                            continue
+                            
+                            end
+                                
+                                
                             tb4=tb4+1;
                             
-                            if (foci_n(i+1)>5.5) && (foci2(i+1)<=10)
+                            if (foci_n(i+1)>5.5) && (foci_n(i+1)<=10)
                                         
                                      aux_g=4;
                                      
@@ -417,10 +480,10 @@ cont=1;
                                         
                             end  
                             
-                            if (foci_n(i+1)>2.75) && (foci2(i+1)<=5.5)
+                            if (foci_n(i+1)>2.75) && (foci_n(i+1)<=5.5)
                                      
                                 
-                                     if (foci_n(i-1)>2.75) && (foci2(i-1)<=5.5)
+                                     if (foci_n(i-1)>2.75) && (foci_n(i-1)<=5.5)
                                          
                                          tb4=tb4-1;
                                          tc4=tc4+1;
@@ -434,7 +497,7 @@ cont=1;
                     end
                 
                     
-                    if length(find(foci_n>2.5 & foci_n<=5.5))<4 && foci_n(i)~=0  
+                    if length(find(foci_n>3 & foci_n<=5.5))<4 && foci_n(i)~=0  
 
                             aux_g=4;
                             
@@ -455,9 +518,9 @@ cont=1;
 
                         tc8=tc8+1;
                         
-                        if (foci_n(i+1)>10) && (foci2(i+1)<=20)
+                        if (foci_n(i+1)>10) && (foci_n(i+1)<=20)
                                      
-                                    if (foci_n(i+2)>10) && (foci2(i+2)<=20)   
+                                    if (foci_n(i+2)>10) && (foci_n(i+2)<=20)   
                                        
                                         aux_g=8;
                                         
@@ -475,7 +538,7 @@ cont=1;
 
                         tb8=tb8+1;  
                         
-                         if (foci_n(i+1)>10) && (foci2(i+1)<=20)
+                         if (foci_n(i+1)>10) && (foci_n(i+1)<=20)
                                         
                                      aux_g=8;
                                      
@@ -506,9 +569,9 @@ cont=1;
                         
                         tc16=tc16+1;  
                         
-                        if (foci_n(i+1)>20) && (foci2(i+1)<36)
+                        if (foci_n(i+1)>20) && (foci_n(i+1)<36)
                                      
-                                     if (foci_n(i+2)>20) && (foci2(i+2)<36)   
+                                     if (foci_n(i+2)>20) && (foci_n(i+2)<36)   
                                      
                                          
                                          aux_g=16;
@@ -526,7 +589,7 @@ cont=1;
 
                         tb16=tb16+1;  
                         
-                        if (foci_n(i+1)>20) && (foci2(i+1)<=36)
+                        if (foci_n(i+1)>20) && (foci_n(i+1)<=36)
                                         
                                      aux_g=16;
                                      

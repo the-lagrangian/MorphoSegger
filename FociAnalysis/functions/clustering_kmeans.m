@@ -20,7 +20,7 @@ x=x(pos_a);
     
 foci_n=foci_n(pos_a);
 
-if length(foci_n)<30
+if length(foci_n)<10
     
     return
     
@@ -73,7 +73,7 @@ for i=1:3%n_cluster
         
         tau_cluster(2)=tau;
         
-    elseif m_tau>=3 && m_tau<=5.5
+    elseif m_tau>3 && m_tau<=5.5
         
         tau_cluster(3)=tau;
     

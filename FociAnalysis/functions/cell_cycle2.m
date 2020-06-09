@@ -25,9 +25,13 @@ tc=zeros(1,length(foci));
 
 foci4=zeros(1,length(foci));
 
-foci2=foci3_N;
+cero=foci==0;
+foci3_N(cero)=0;
+foci2=foci;
 
-foci3=foci2;
+
+
+
 
 
 aux_g=0;
@@ -115,7 +119,7 @@ cont=1;
 
                                
                                 
-                                if (foci2(i+1)>3) && (foci2(i+1)<=5)
+                                if (foci2(i+1)>=3) && (foci2(i+1)<=5)
                                         
                                     
                                         
@@ -136,7 +140,7 @@ cont=1;
                                 foci3_N(i)=0;
                                 
                                 
-                                if (foci2(i+1)>3) && (foci2(i+1)<=5)
+                                if (foci2(i+1)>=3) && (foci2(i+1)<=5)
 
                                     aux_g=2;
                                     
@@ -167,7 +171,7 @@ cont=1;
                     elseif aux_g==2
 
                         
-                        if length(find(foci2>3 & foci2<=5))<4
+                        if length(find(foci2>=3 & foci2<=5))<4
 
                            aux_g=4;
                            
@@ -176,7 +180,7 @@ cont=1;
                         end    
                        
                     
-                        if (foci2(i)>3) && (foci2(i)<=5)
+                        if (foci2(i)>=3) && (foci2(i)<=5)
 
                                
                                 
@@ -340,9 +344,9 @@ cont=1;
             
             %foci_nn=medfilt1(foci_nn,3);
             
-            [fit_s, ~]=createFit_smoothingspline(foci,0.975);
+            [fit_s, ~]=createFit_smoothingspline(foci2,0.975);
 
-            x=[1:length(foci)];
+            x=[1:length(foci2)];
             foci_n1=fit_s(x)';
             
             [fit_s2, ~]=createFit_smoothingspline(foci3_N,0.975);
@@ -361,7 +365,7 @@ cont=1;
             
             foci_n(aux_z)=NaN;
             
-            aux=find(foci3_N==0);
+            aux=find(foci2==0);
             foci_n(aux)=0;
             
             aux_g=0;
@@ -583,7 +587,26 @@ cont=1;
 
                     if foci_n(i)==0 
              
+                            if foci_n(i+1)~=0
+             
+                                if foci_n(i+2)==0
+                                  
+                                    foci_n(i+1)=0;
+                                end    
                             
+                            end
+                        
+                            
+                            if foci_n(i-1)>=1.5 && foci_n(i-1)<3
+             
+                            aux_g=1;
+                                     
+                            continue
+                            
+                            end
+                        
+                        
+                        
                             tb4=tb4+1;
                             
                             if (foci_n(i+1)>=5.5) && (foci_n(i+1)<10)

@@ -1,69 +1,73 @@
-function  CCResults =  fociAnalysis(stackname,kymofolder,gc_fitfolder,kmeansfolder,fociresfolder,Ncell,frame,limits,paramFit,timeStep,Dparameter,exp_cut,thnoise)
+function  [noiseTh] =  fociAnalysis_ps(stackname,frame,limits,paramFit,timeStep,Dparameter,exp_cut)
 
+delta_D=5;
 
-N_D=9;
+Dparameter=60;
 
+N_D=1;
 
+N_frames=20;
+
+paramFit=N_frames;
 %loading .tif stack and setting xy number
 tsStack = tiffread(stackname);
 xy_pos = char(regexp(stackname,'(_xy\w*).','match'));
 xy_pos = [erase(xy_pos,"."),'_'];
 
-delta=0.5;
+th_levels=10;
 
-delta_D=2.5;
 
-wavelet_bin_1=stack_wavelet_foci(tsStack,thnoise-1*delta);
-wavelet_bin_2=stack_wavelet_foci(tsStack,thnoise+0*delta);
-wavelet_bin_3=stack_wavelet_foci(tsStack,thnoise+1*delta);
+posiciones=find(limits(:,2)==max(limits(:,2)) & limits(:,2)>max(limits(:,2))-N_frames+1);
+
+if isempty(posiciones)==1
     
-for N=1:Ncell
+    warning("Error")
+end    
+u_frame=max(limits(:,2));
+p_frame=u_frame-N_frames+1;
 
-try    
+wavelet_bin_1=stack_wavelet_foci_ps(tsStack,th_levels,p_frame,u_frame,N_frames);
+
+noiseTh=zeros(length(posiciones),1);
+
+    
+for z=1:length(posiciones)%Ncell
+try     
+     N=posiciones(z);
+
+   
              
-     fit_data=zeros(1,size(tsStack,2));
-     d_up=zeros(1,size(tsStack,2));
-     d_bt=zeros(1,size(tsStack,2));
-     x_pole_up=zeros(1,size(tsStack,2));
-     x_pole_bt=zeros(1,size(tsStack,2));
-     y_pole_up=zeros(1,size(tsStack,2));
-     y_pole_bt=zeros(1,size(tsStack,2));   
-     l_cell=zeros(1,size(tsStack,2));
-     foci=zeros(1,size(tsStack,2));
-     foci2=zeros(1,size(tsStack,2)); 
-     foci3=zeros(1,size(tsStack,2)); 
-     foci4=zeros(1,size(tsStack,2)); 
-     tb=zeros(1,length(foci));
-     tc=zeros(1,length(foci));
+     l_cell=zeros(1,u_frame);
+     foci=zeros(1,u_frame);
+     foci2=zeros(1,u_frame); 
+     foci3=zeros(1,u_frame); 
+     foci4=zeros(1,u_frame); 
+     tb=zeros(1,u_frame);
+     tc=zeros(1,u_frame);
      a1=[];
      a2=[];
      a3=[];
-     foci_m=zeros(N_D,size(tsStack,2));
-     foci3_m=zeros(3,size(tsStack,2));
+     foci_m=zeros(N_D,u_frame);
+     foci3_m=zeros(th_levels,u_frame);
      
-     start=limits(N,1);
+     start=limits(N,2)-N_frames+1;
      finish=limits(N,2);
      cont=finish-start;
+     finish=limits(N,2);
 
-     allCN = vertcat(frame(finish).object.cellID); %finding ids per cell 
-     ind = find(allCN == N);
+    
 
-     if cont<paramFit  %consecutive points for a single cell to include the trajectory
-          continue
-     else  
+     %if cont<=paramFit-1  %consecutive points for a single cell to include the trajectory
+     %     continue
+     %else  
          %%% Build up the mother trajectory for kymograph. It uses 
          %%% the centerline of each cell for the last frame 
 
          %%%start
 
 
-         x_ztr=round(frame(finish).object(ind).centerline(:,2));
-
-         y_ztr=round(frame(finish).object(ind).centerline(:,1));
-         l_k=round(length(x_ztr)/2);
-         kymo=zeros(3*cont,length(x_ztr));
-         temp=1;
-    end
+    
+    %end
 %         %%%ends
 % 
 %         %%%Generates and ROI using regionprops and BoundingBox
@@ -102,7 +106,7 @@ try
 %     % ends for for each frame each cell. 
 %   
 %       %Foci counting
-        for k=start:finish           
+        for k=start:finish      
         
         try    
             
@@ -111,29 +115,13 @@ try
 
                allCN = vertcat(frame(k).object.cellID); % comma separated list expansion 
                ind = find(allCN == N);
-               label=num2str(N);
+               
 
                 xs=round(frame(k).object(ind).Xcont);
                 ys=round(frame(k).object(ind).Ycont);
-                label=num2str(N);
-
-               
-              % pole calculations
-               pole_2=frame(k).object(ind).pole2; 
-
-               if pole_2==1
-                   pole_2=frame(k).object(ind).pole1;   
-               end
-
-
-                x_pole_up(k)=xs(1);    
-                y_pole_up(k)=ys(1);
-                x_pole_bt(k)=xs(pole_2);        
-                y_pole_bt(k)=ys(pole_2);
-                l_cell(k)=frame(k).object(ind).length;      
-
-  
                 
+                
+                l_cell(k)=frame(k).object(ind).length;   
                                 
                 A=tsStack(k).data;                                   
                 AA=A;
@@ -219,24 +207,13 @@ try
                 foci_m(p,k)=contar;
                
                 end
-               %%referencing to mother trajectory
-               halved=round(length(b)/2);
-               r=1;
-
-               if l_k<halved
-                   continue
-               end    
-
-               for q=l_k-halved+1:1:l_k+halved-1
-                   
-                    kymo(3*temp,q)=aa(r);
-                    kymo(3*temp-1,q)=aa(r);
-                    kymo(3*temp-2,q)=aa(r);
-                    r=r+1;
-               end
+      
                %%%% Wavelet counting
                
-               AB=wavelet_bin_1(k).data;
+               for w=1:th_levels
+               
+               
+               AB=wavelet_bin_1(w,k).data;
       
                AB(loc)=0;
                                    
@@ -246,34 +223,12 @@ try
                                    
                stats2=stats2(stats2>15);
                                    
-               foci3_m(1,k)=length(stats2);
+               foci3_m(w,k)=length(stats2);
                                    
-               AB=wavelet_bin_2(k).data;
-      
-               AB(loc)=0;
-                                   
-               stats = regionprops(AB,'Area');
-              
-               stats2=vertcat(stats.Area);
-                                   
-               stats2=stats2(stats2>15);
-                                   
-               foci3_m(2,k)=length(stats2);
-                                   
-               AB=wavelet_bin_3(k).data;
-      
-               AB(loc)=0;
-                                   
-               stats = regionprops(AB,'Area');
-              
-               stats2=vertcat(stats.Area);
-                                   
-               stats2=stats2(stats2>15);
-                                   
-               foci3_m(3,k)=length(stats2);
+               end
                
                %%%% End wavelet 
-               temp=temp+1;
+             
                
         
         catch        
@@ -283,55 +238,26 @@ try
                
         end
 
-
-    aux2=find(l_cell==0);
+    aux2=l_cell==0;
     l_cell(aux2)=NaN;         
     
+    exp_cut=10;
+    paramFit=10;
     time=timeStep*(0:1:length(l_cell)-1); 
-    [fit, gof, t_t]=createFit_exp(time, l_cell,paramFit,exp_cut);
+    [~, ~, t_t]=createFit2_exp(time, l_cell,paramFit,exp_cut);
 
     if t_t==1      
         continue                                
     end    
     
-    % Saving growth curves and exponential fits
-    gc_fitname  = [gc_fitfolder,'gcfit',xy_pos,'cell_',label,'_','.fig'];
-    savefig(gc_fitname); %save plot                   
     close all
 
-    d_up=[sqrt(diff(x_pole_up).^2+diff(y_pole_up).^2),NaN];
-    d_bt=[sqrt(diff(x_pole_bt).^2+diff(y_pole_bt).^2),NaN];                         
-    d_up(aux2)=NaN;  
-    d_bt(aux2)=NaN;
     
-    [foci,foci3]=cell_cycle_opt(foci_m,foci3_m);
-                            
-    foci(aux2)=NaN;
-  
-    foci3(aux2)=NaN;
-                            
-    foci4(aux2)=NaN;
-                            
-    foci_esp=(foci+foci3)/2;
+    [t_n]=cell_cycle_opt_ps(foci_m,foci3_m);
+    
+    noiseTh(z)=t_n;
+    
 
-    fit_data(1)=log(2)/fit.b;
-    fit_data(2)=gof.rsquare;
-    
-    %Performing clustering on foci data
-    kmeans_name = [kmeansfolder,'kmeansFoci',xy_pos,'cell_',label,'_','.fig'];
-    [foci4, foci2, tb, tc, tau]=cell_cycle_main2(foci,foci_esp,kmeans_name);
-    output=[l_cell;fit_data;d_up;d_bt;foci3;foci2;tb;tc;tau;foci4];
-    CCResults(N).out=output;
-
-    % Generating and saving kymographs
-    kymo_name = [kymofolder,'kymograph',xy_pos,'cell_',label,'_','.tif'];
-    I_a=adapthisteq(mat2gray(kymo));
-    imwrite(I_a,kymo_name);
-    
-    %Save results 
-    foci_name=[fociresfolder,'cc_res',xy_pos,'.mat']; 
-    save(foci_name,'CCResults');
-    
 catch        
     continue
 end     
