@@ -1,6 +1,6 @@
 function run_fociAnalysis(dirname,paramFit,timeStep,Dparameter,exp_cut,noiseTh)
 
-tic
+
 %%%%% Encuentra el frame inicial y final por celula con la
     %%%%% mayor longitud in-interrumpida de frames. Genera la matrix
     %%%%% limites. Cada fila es una celula. Esto podria ser una
@@ -128,29 +128,28 @@ for p= 1:num_xy
     noiseTh=round(mean(Th_noise(Th_noise>0)));
     
     
-    formatSpec = 'The suggested value for threshold is %d';
-   
-    str_input = sprintf(formatSpec,noiseTh);
-    
-    prompt = {str_input};
-    dlgtitle = 'Input';
-    dims = [1 35];
-    answer = inputdlg(prompt,dlgtitle,dims);
-    
-    if isempty(answer)==1
-        
-        return
-    end 
-    
-    noiseTh = str2num(answer{1});
+%     formatSpec = 'The suggested value for threshold is %d';
+%    
+%     str_input = sprintf(formatSpec,noiseTh);
+%     
+%     prompt = {str_input};
+%     dlgtitle = 'Input';
+%     dims = [1 35];
+%     answer = inputdlg(prompt,dlgtitle,dims);
+%     
+%     if isempty(answer)==1
+%         
+%         return
+%     end 
+%     
+%     noiseTh = str2num(answer{1});
     
     
     
     fociAnalysis(stackname,kymofolder,gc_fitfolder,kmeansfolder,fociresfolder,Ncell,frame,limits,paramFit,timeStep,Dparameter,exp_cut,noiseTh);
    
     name_noise=[dirname,'Thresholds.mat'];
-    save(name_noise,'Th_noise')
+    save(name_noise,['Th_noise_xy',num2str(num_xy)])
     
 end
-toc
 end
