@@ -125,7 +125,7 @@ for p= 1:num_xy
     
     
     
-    noiseTh=round(mean(Th_noise(Th_noise>0)));
+    noiseTh=mode(Th_noise(Th_noise>0)); % switched to mode calculation instead of mean
     
     
 %     formatSpec = 'The suggested value for threshold is %d';
@@ -148,8 +148,8 @@ for p= 1:num_xy
     
     fociAnalysis(stackname,kymofolder,gc_fitfolder,kmeansfolder,fociresfolder,Ncell,frame,limits,paramFit,timeStep,Dparameter,exp_cut,noiseTh);
    
-    name_noise=[dirname,'Thresholds.mat'];
-    save(name_noise,['Th_noise_xy',num2str(num_xy)])
+    name_noise=[dirname,'noiseTh_parameter_xy',num2str(num_xy)];
+    save(name_noise,Th_noise)
     
 end
 end
