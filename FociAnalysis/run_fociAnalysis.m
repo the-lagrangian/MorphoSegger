@@ -123,10 +123,12 @@ for p= 1:num_xy
     
     [Th_noise]=fociAnalysis_ps(stackname,frame,limits,paramFit,timeStep,Dparameter,exp_cut);
     
-    noiseTh_all =struct('pos', cell(1, num_xy), 'param', cell(1, num_xy));
+    
+    
+    struct('pos', cell(1, num_xy), 'data', cell(1, num_xy));
     noiseTh=round(mean(Th_noise(Th_noise>0))); % switched to mode calculation instead of mean
-    noiseTh_all(p).pos=(['xy_',num2str(p)]);
-    noiseTh_all(p).param=noiseTh;
+    noiseTh_all(p).pos=contents(p).name;
+    noiseTh_all(p).data=Th_noise;
     %name_noise=[dirname,'noiseTh_params_used.mat'];
     %save(name_noise,'noiseTh_all');
     
@@ -152,7 +154,7 @@ for p= 1:num_xy
        
 end
 
-name_noise=[dirname,'noiseTh_params_used.mat'];
+name_noise=[dirname,'noiseTh_params.mat'];
 save(name_noise,'noiseTh_all');
 
 end
