@@ -320,17 +320,20 @@ try
     %Performing clustering on foci data
     kmeans_name = [kmeansfolder,'kmeansFoci',xy_pos,'cell_',label,'_','.fig'];
     [foci4, foci2, tb, tc, tau]=cell_cycle_main2(foci,foci_esp,kmeans_name);
+    
+    %Saving cell cycle data
     output=[l_cell;fit_data;d_up;d_bt;foci3;foci2;tb;tc;tau;foci4];
-    CCResults(N).out=output;
+    foci_name=[fociresfolder,'cc_res',xy_pos,'cell_',label,'_','.mat']; 
+    save(foci_name,'output');
+   
 
     % Generating and saving kymographs
     kymo_name = [kymofolder,'kymograph',xy_pos,'cell_',label,'_','.tif'];
     I_a=adapthisteq(mat2gray(kymo));
     imwrite(I_a,kymo_name);
     
-    %Save results 
-    foci_name=[fociresfolder,'cc_res',xy_pos,'.mat']; 
-    save(foci_name,'CCResults');
+     
+    
     
 catch        
     continue
