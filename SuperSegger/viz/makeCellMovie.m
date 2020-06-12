@@ -170,7 +170,8 @@ for ii = 1:num_im
     
     
     drawnow;
-    mov(ii) = getframe;
+    mov(ii) = getframe(gcf);
+    %mov(ii).cdata = mov(ii).cdata(end :-1: 1, :, :);
 end
 end
 

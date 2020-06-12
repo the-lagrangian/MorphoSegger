@@ -1762,7 +1762,7 @@ if ~isempty(handles.FLAGS)
                 handles.contents, ii, handles.num_im, handles.clist, handles.FLAGS);
             showSeggerImage( data_c, data_r, data_f, handles.FLAGS, handles.clist, handles.CONST, handles.axes1);
             drawnow;
-            mov(counter) = getframe;
+            mov(counter) = getframe(gcf);
             handles.message.String = ['Frame number: ', num2str(ii)];
         end
         handles.message.String = ('Field mosaic loaded');
@@ -1808,7 +1808,7 @@ if ~isempty(handles.FLAGS)
                 handles.contents, ii, handles.num_im, handles.clist, handles.FLAGS);
             showSeggerImage( data_c, data_r, data_f, handles.FLAGS, handles.clist, handles.CONST, handles.axes1);
             drawnow;           
-            mov(counter) = getframe;
+            mov(counter) = getframe(gcf);
             counter = counter + 1;
             handles.message.String = ['Frame number: ', num2str(ii)];
         end
