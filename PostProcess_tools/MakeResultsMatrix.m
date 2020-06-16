@@ -40,7 +40,30 @@ clist.def={};
 
 for i = 1:num_im
      data_c = loaderInternal([dirname,contents(i).name]);
-     clist.data(i,1) = data_c.output(2,1);
+     
+     clist.data(i,1) = data_c.output(2,1); %doubling time
+     clist.data(i,2) = data_c.output(7,2); %B period 2 foci
+     clist.data(i,3) = data_c.output(7,3); %B period 4 foci
+     clist.data(i,4) = data_c.output(7,4); %B period 8 foci
+     
+     %Diego's method
+     clist.data(i,5) = data_c.output(8,2); %C period 2 foci %Dudoso
+     clist.data(i,7) = data_c.output(8,3); %C period 4 foci
+     clist.data(i,9) = data_c.output(8,4); %C period 8 foci
+     
+     %clustering
+     clist.data(i,6) = data_c.output(9,2); %C period 2 foci 
+     clist.data(i,8) = data_c.output(9,3); %C period 4 foci
+     clist.data(i,10) = data_c.output(9,4); %C period 8 foci
+     
+     %rows: time-dependent 2D array
+     %1. length
+     %3. Pole 1 variation
+     %4. Pole 2 variation
+     %5. Foci time course wavelet
+     %6. Foci time Diego's method
+     
+
 end
 
 
