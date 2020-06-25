@@ -126,7 +126,7 @@ for p= 1:num_xy
     
     
     struct('pos', cell(1, num_xy), 'data', cell(1, num_xy));
-    noiseTh=round(mean(Th_noise(Th_noise>0))); % switched to mode calculation instead of mean
+    noiseTh=round(mean(Th_noise(Th_noise>0))); 
     noiseTh_all(p).pos=contents(p).name;
     noiseTh_all(p).data=Th_noise;
     %name_noise=[dirname,'noiseTh_params_used.mat'];
@@ -150,7 +150,7 @@ for p= 1:num_xy
     
     
     
-    %fociAnalysis(stackname,kymofolder,gc_fitfolder,kmeansfolder,fociresfolder,Ncell,frame,limits,paramFit,timeStep,Dparameter,exp_cut,noiseTh);
+    fociAnalysis(stackname,kymofolder,gc_fitfolder,kmeansfolder,fociresfolder,Ncell,frame,limits,paramFit,timeStep,Dparameter,exp_cut,noiseTh);
        
 end
 
