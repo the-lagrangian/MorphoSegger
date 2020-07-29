@@ -150,8 +150,9 @@ for p= 1:num_xy
     
     
     
-    fociAnalysis(stackname,kymofolder,gc_fitfolder,kmeansfolder,fociresfolder,Ncell,frame,limits,paramFit,timeStep,Dparameter,exp_cut,noiseTh);
-       
+    %fociAnalysis(stackname,kymofolder,gc_fitfolder,kmeansfolder,fociresfolder,Ncell,frame,limits,paramFit,timeStep,Dparameter,exp_cut,noiseTh);
+    length_function(stackname,kymofolder,gc_fitfolder,kmeansfolder,fociresfolder,Ncell,frame,limits,paramFit,timeStep,Dparameter,exp_cut,noiseTh);
+      
 end
 
 name_noise=[dirname,'noiseTh_params.mat'];

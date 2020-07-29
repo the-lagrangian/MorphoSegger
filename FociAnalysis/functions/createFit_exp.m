@@ -67,19 +67,24 @@ end
 
 
 % Set up fittype and options.
-ft = fittype( 'exp1' );
+
+ft = fittype('a*x + b',...
+    'dependent',{'y'},'independent',{'x'},...
+    'coefficients',{'a','b'});
+%ft = fittype( 'exp1' );
+
 opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
 %opts.Display = 'Off';
 %opts.StartPoint = [34.182834814215 0.00653034302260214];
 
 % Fit model to data.
-[fitresult, g_fit] = fit( xData, yData, ft, opts );
+[fitresult, g_fit] = fit( xData, log2(yData), ft, opts );
 
 [xData, yData] = prepareCurveData( x, a );
 
 % Plot fit with data.
  figure( 'Name', 'untitled fit 1' );
- h = plot( fitresult, xData, yData );
+ h = plot( fitresult, xData, log2(yData) );
  legend( h, 'a vs. x', 'untitled fit 1', 'Location', 'NorthEast', 'Interpreter', 'none' );
 % % Label axes
  xlabel( 'x', 'Interpreter', 'none' );
