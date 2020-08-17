@@ -20,7 +20,7 @@
 
 %%  MODIFY PIPELINE ACCORDING TO EXPERIMENT SETTINGS AND SAVE IT IN EXPERIMENT FOLDER
 
-function processExp(preprocess,naming,supersegger,cleanup,imag2stack,morpho,fociCalc)
+function processExp_GrowthRate(preprocess,naming,supersegger,cleanup,imag2stack,morpho,fociCalc)
 
 % Steps of the pipeline: 
 %Boolean variables to decide which steps of the pipeline to run:
@@ -46,14 +46,14 @@ if preprocess
     %The macro converts ND2 files to tif for two separate channels. It performs 
     %gaussian blur on the green channel if desired (check the macro code)
 
-    macroFile1='ConvertND2toTif.txt';
+    macroFile1='ConvertND2toTif_phaseOnly.txt';
 
     % Call MIJ for preprocessing:
     filepathMacro = getMacroPath(); %Macro Files path
 
     % Select frames to analyze
     t_start=1;
-    t_end=89;
+    t_end=51;
 
     %calls MIJ to run the Fiji macro with arguments
     args=strcat(dirname,';',num2str(t_start),';',num2str(t_end)); %group arguments
@@ -76,22 +76,23 @@ end
 
 if naming  
     
-    if ~exist( 'dirname','var')
-        dirname= pwd;
-        dirname = fixDir(dirname);
-        dirname =  ([dirname,'Analysis',filesep]);
-    end        
-    
+    %if ~exist( 'dirname','var')
+    dirname= pwd;
+    dirname = fixDir(dirname);
     dirname =  ([dirname,'Analysis',filesep]);
     cd(dirname); % **This is important to keep**
+    %end        
+    
+   % dirname =  ([dirname,'Analysis',filesep]);
+   
 
     %Set conversion parameters based on your file names:
-    basename = '';
+    basename = 'OnlyPhase_4mMXylose_';
     timeFilterBefore ='_t';
     timeFilterAfter = '.t' ;
-    xyFilterBefore='';
-    xyFilterAfter='xy';
-    channelNames = {'C=0','C=1'};
+    xyFilterBefore='xy';
+    xyFilterAfter='_';
+    channelNames = {''};
 
     convertImageNames(dirname, basename, timeFilterBefore, ...
         timeFilterAfter, xyFilterBefore,xyFilterAfter, channelNames )
@@ -143,7 +144,7 @@ if supersegger
 
     % Constants Calarco Microscope:
     CONST.imAlign.Phase     = [ 0.0000    0.0000    0.0000    0.0000];
-    CONST.imAlign.GFP       = [ 0.0000    0.0000    1.0000    1.0000];
+    CONST.imAlign.GFP       = [ 0.0000    0.0000    0.0000    0.0000];
     CONST.imAlign.mCherry   = [0.04351   -0.0000    0.7200    0.5700]; 
     CONST.imAlign.DAPI      = [0.0000     0.0000    0.0000    0.0000]; 
 
@@ -162,7 +163,7 @@ if supersegger
 
 %% Foci detection settings (For use only in SuperSegger)
 
-    CONST.trackLoci.numSpots = [5 0]; % Max number of foci to fit in each fluorescence channel (default = [0 0])
+    CONST.trackLoci.numSpots = [0 0]; % Max number of foci to fit in each fluorescence channel (default = [0 0])
     CONST.trackLoci.fluorFlag = false ;    % compute integrated fluorescence (default = true)
     CONST.trackOpti.NEIGHBOR_FLAG = false; % calculate number of neighbors (default = false)
     CONST.imAlign.AlignChannel = 1; % change this if you want the images to be aligned to fluorescence channel
@@ -171,15 +172,14 @@ if supersegger
 %% Segmentation Filtering options in SuperSegger (modify if you see problems in detection)
 
     %The first two options (PEBBLE_CONST, INTENSITY_DIF) are for the remove_debris variable. 
-    CONST.superSeggerOpti.PEBBLE_CONST = 1.3;          %Useful for removing debris
-    CONST.superSeggerOpti.INTENSITY_DIF = 0.3;         %Useful for removing debris
-    CONST.superSeggerOpti.remove_microcolonies =false; %Deletes clusters of cells. 
-    CONST.superSeggerOpti.remove_debris = 1;           %Deletes debris and bubbles
-    CONST.superSeggerOpti.MAX_WIDTH = 1e15;            %It sets cell length to split cells
-    CONST.superSeggerOpti.MAGIC_RADIUS = 22;           %Contrast enhancement. Deletes areas between cells 
-    CONST.seg.OPTI_FLAG = false;                       %Segments cells by shape
-    CONST.regionOpti.MIN_LENGTH = 10;                  %Minimum length of cells
-    CONST.trackOpti.MIN_AREA=80;                       %Threshold to filter small particles
+    CONST.superSeggerOpti.PEBBLE_CONST = 1.3; %Default 1.5 for 60XEcM9
+    CONST.superSeggerOpti.INTENSITY_DIF = 0.3; %Default 0.15 for 60XEcM9
+    CONST.superSeggerOpti.remove_microcolonies =false; %Default is 1. It prevents deleting clusters of cells.
+    CONST.superSeggerOpti.remove_debris = 1; %Turn off it is deleting cells
+    CONST.superSeggerOpti.MAX_WIDTH = 1e15; %Set this high to prevent filaments to be split 
+    CONST.seg.OPTI_FLAG = false; %To avoid segmenting cells by shape
+    CONST.regionOpti.MIN_LENGTH = 10; %Min length of cell
+    CONST.superSeggerOpti.MAGIC_RADIUS = 22;
 
 
     % this helps cleanup death cells, fragments etc..
@@ -266,8 +266,9 @@ if imag2stack
         dirname =  ([dirname,'Analysis',filesep]);
      end     
     
+    filepathMacro = getMacroPath();
     disp('Converting Images to Stack...');
-    macroFile2='tifImagesToStack.txt';
+    macroFile2='tifImagesToStack_phaseOnly.txt';
     runMacro([filepathMacro,macroFile2],dirname);
 
 end
@@ -295,7 +296,7 @@ if morpho
     params.v_method = 3;        % 1 = Gradient Segmentation; 2 = Laplacian Segmentation; 
                                 % 3 = Adaptive Threshold Segmentation; 4 = Canny Segmentation
     params.v_simplethres=1;     % Simple threshold 
-    params.f_areamin = 90;     % Min region size
+    params.f_areamin = 120;     % Min region size
     params.f_areamax = 200000;  % Max region size
     params.v_prox = 0;          % Cells are in proximity
     params.v_exclude=0;         % Exclude edge objects
@@ -325,13 +326,13 @@ if fociCalc
      end
      
     %Parameters    
-    paramFit=30;     % Consecutive points for a single cell to include the trajectory
-    Dparameter=65;   % Threshold to detect if it is foci in Diego's algorithm
-    exp_cut=20;      % Takes only 65 pixels onwards to fit the exponential. Those points are not included in the gc_fit plot but the fit itself starts on point 65
+    paramFit=5;     % Consecutive points for a single cell to include the trajectory
+    Dparameter=1;   % Threshold to detect if it is foci in Diego's algorithm
+    exp_cut=1;      % Takes only 65 pixels onwards to fit the exponential. Those points are not included in the gc_fit plot but the fit itself starts on point 65
     noiseTh=8;       % Noise threshold for wavelet detection
 
     disp('Running Foci Analysis...')
-    run_fociAnalysis(dirname,paramFit,CONST.getLocusTracks.TimeStep,Dparameter,exp_cut,noiseTh)
+    run_fociAnalysis2(dirname,paramFit,2,Dparameter,exp_cut,noiseTh)
 
 end
 %% Shutting down parallel pool
@@ -345,7 +346,9 @@ delete(poolobj);
 t1=toc;
 disp(['Finished in ' num2str(round(10*t1/60)/10) ' minutes.']);
 
-load('handel') %alarm that the code is finished
-sound(y,Fs)
+%load('handel') %alarm that the code is finished
+%sound(y,Fs)
 
 end
+
+
