@@ -41,11 +41,11 @@ for (i = 0; i < filenames.length; i++) {
         
             //Process Phase channel
             ids=newArray(nImages);
-                  for (k=0;k<nImages;k++) {
+                  for (k=0;k<nImages;k++) {   //this first for loop is necessary to get all images open
                         selectImage(k+1);
                         ids[k]=getImageID;
                   }
-                        for (k=0;k<ids.length;k++) {
+                        for (k=0;k<ids.length;k++) { // this second for loop is necessary to get the right number of images to iterate
                               selectImage(ids[k]);
                               title = getTitle();
                               titlePhase = replace(title, " - ", " ");
