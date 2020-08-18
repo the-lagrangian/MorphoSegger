@@ -24,6 +24,7 @@ The easiest way to install MIJ is via the repository. Click *Update > Manage upd
 
 **Note:** Set Matlab memory settings to accommodate your RAM: 
 *Preferences > General > Java Heap Memory* 
+and restart Matlab.
 
   
 #### Modifications to SuperSegger and Morphometrics:
