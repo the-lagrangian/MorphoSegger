@@ -28,6 +28,7 @@ end
 
 %List seg mask files and runs morphometrics in parallel
 
+dirname_xy =[];
 parfor (k = 1:num_xy)
     dirname_xy = dirnamelist{k}; %added
     mask = dir([dirname_xy,filesep,'mask1seg_xy*.tif']);
