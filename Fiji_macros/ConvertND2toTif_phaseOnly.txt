@@ -57,7 +57,7 @@ for (i = 0; i < filenames.length; i++) {
                               titlePhaseNew2 = replace(titlePhaseNew1, " ", "");
 
                               print(titlePhaseNew2);
-                        //run("Image Sequence... " , "format=TIFF name=["+titlePhaseNew2+timePrefix+"] save=&outDir");
+                              run("Image Sequence... " , "format=TIFF name=["+titlePhaseNew2+timePrefix+"] save=&outDir");
                               close();
                          }
         
