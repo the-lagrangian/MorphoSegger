@@ -346,8 +346,8 @@ delete(poolobj);
 t1=toc;
 disp(['Finished in ' num2str(round(10*t1/60)/10) ' minutes.']);
 
-%load('handel') %alarm that the code is finished
-%sound(y,Fs)
+load('handel') %alarm that the code is finished
+sound(y,Fs)
 
 end
 
