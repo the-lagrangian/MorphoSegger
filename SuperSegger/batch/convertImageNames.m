@@ -88,8 +88,8 @@ end
 
 
 if isempty(imagesInOrig) % move original images
-    %movefile([dirname,filesep,'*.tif*'],dirOriginal); % move all images to dir original
-    system('find . -name "*.tif" -maxdepth 1 -exec mv {} ./original/ \;'); % allows to move high amount of images
+    movefile([dirname,filesep,'*.tif*'],dirOriginal); % move all images to dir original
+    %system('find . -name "*.tif" -maxdepth 1 -exec mv {} ./original/ \;'); % allows to move high amount of images
     
 end
 
