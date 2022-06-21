@@ -53,7 +53,7 @@ if preprocess
 
     % Select frames to analyze
     t_start=1;
-    t_end=89;
+    t_end=300;
 
     %calls MIJ to run the Fiji macro with arguments
     args=strcat(dirname,';',num2str(t_start),';',num2str(t_end)); %group arguments
@@ -79,7 +79,7 @@ if naming
     if ~exist( 'dirname','var')
         dirname= pwd;
         dirname = fixDir(dirname);
-        dirname =  ([dirname,'Analysis',filesep]);
+%         dirname =  ([dirname,'Analysis',filesep]);
     end        
     
     dirname =  ([dirname,'Analysis',filesep]);
@@ -87,11 +87,11 @@ if naming
 
     %Set conversion parameters based on your file names:
     basename = '';
-    timeFilterBefore ='_t';
-    timeFilterAfter = '.t' ;
-    xyFilterBefore='';
+    timeFilterBefore ='_t_t';
+    timeFilterAfter = 'c' ;
+    xyFilterBefore='_Seq';
     xyFilterAfter='xy';
-    channelNames = {'C=0','C=1'};
+    channelNames = {'c003','c001','c002'};
 
     convertImageNames(dirname, basename, timeFilterBefore, ...
         timeFilterAfter, xyFilterBefore,xyFilterAfter, channelNames )
@@ -127,7 +127,7 @@ if supersegger
 
 %% Loading SuperSegger Constants
 
-    res = '60XBsS750fil2'; %These constants have been optimized for B.subtilis filaments
+    res = '100XBs_fil_perfect'; %These constants have been optimized for B.subtilis filaments
     CONST = loadConstants(res,parallel_flag) ;
 
 %% Modifying specific SuperSegger constant options
@@ -144,7 +144,7 @@ if supersegger
     % Constants Calarco Microscope:
     CONST.imAlign.Phase     = [ 0.0000    0.0000    0.0000    0.0000];
     CONST.imAlign.GFP       = [ 0.0000    0.0000    0.0000    0.0000];
-    CONST.imAlign.mCherry   = [0.04351   -0.0000    0.7200    0.5700]; 
+    CONST.imAlign.mCherry   = [0.0000   -0.0000    0.0000    0.0000]; 
     CONST.imAlign.DAPI      = [0.0000     0.0000    0.0000    0.0000]; 
 
 % *last two values are X and Y shifts.
@@ -163,8 +163,8 @@ if supersegger
 %% Foci detection settings (For use only in SuperSegger)
 
     CONST.trackLoci.numSpots = [5 0]; % Max number of foci to fit in each fluorescence channel (default = [0 0])
-    CONST.trackLoci.fluorFlag = false ;    % compute integrated fluorescence (default = true)
-    CONST.trackOpti.NEIGHBOR_FLAG = false; % calculate number of neighbors (default = false)
+    CONST.trackLoci.fluorFlag = true ;    % compute integrated fluorescence (default = true)
+    CONST.trackOpti.NEIGHBOR_FLAG = true; % calculate number of neighbors (default = false)
     CONST.imAlign.AlignChannel = 1; % change this if you want the images to be aligned to fluorescence channel
     CONST.view.fluorColor = {'b','g','r'}; %Set the color for plotting different channels (in order)
 
@@ -196,12 +196,11 @@ if supersegger
     CONST.getLocusTracks.TimeStep = 5; %time between frames, used for analysis
 
 %% Options to remove CellAsic pillars:
-
-    % CONST.superSeggerOpti.remove_pillars.flag = true;
-    % CONST.superSeggerOpti.remove_pillars.radius = 2;
-    % CONST.superSeggerOpti.remove_pillars.cut = 0.05;
-    % CONST.superSeggerOpti.remove_pillars.Area_Cut = 700;
-    % CONST.superSeggerOpti.remove_pillars.debug = false;
+    CONST.superSeggerOpti.remove_pillars.flag = true;
+    CONST.superSeggerOpti.remove_pillars.radius = 2;
+    CONST.superSeggerOpti.remove_pillars.cut = 0.05;
+    CONST.superSeggerOpti.remove_pillars.Area_Cut = 3000;
+    CONST.superSeggerOpti.remove_pillars.debug = false;
 
 %% Skip Frames for Segmentation
 
@@ -267,6 +266,7 @@ if imag2stack
      end     
     
     disp('Converting Images to Stack...');
+    filepathMacro = getMacroPath();
     macroFile2='tifImagesToStack.txt';
     runMacro([filepathMacro,macroFile2],dirname);
 

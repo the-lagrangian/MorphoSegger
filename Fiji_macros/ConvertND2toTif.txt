@@ -36,28 +36,14 @@ for (i = 0; i < filenames.length; i++) {
 	currFile = inDir+filenames[i];
 	if(endsWith(currFile, extension) && matches(filenames[i], pattern)) { // process matching regex, 
             count++;
-        //Process Fluor channel    
-        run("Bio-Formats Importer", "open=currFile autoscale color_mode=Default rois_import=[ROI manager] specify_range split_channels view=Hyperstack stack_order=XYCZT t_begin=&timeStart t_end=&timeEnd t_step=1");
+        run("Bio-Formats Importer", "open=currFile autoscale color_mode=Default rois_import=[ROI manager] concatenate_series open_all_series specify_range view=Hyperstack stack_order=XYCZT t_begin=&timeStart t_end=&timeEnd t_step=1");
         fluor = getImageID(); //these steps are necessary to select the image window properly
         selectImage(fluor);
         fluorName= getTitle();
         titleFluor = replace(fluorName, extension, "xy"); // Adjust the renaming according to the initial ND2 file name
         rename(titleFluor);
-        //run("Gaussian Blur...", "sigma=1 stack");
         run("Image Sequence... ", "format=TIFF name=["+titleFluor+timePrefix+"] save=&outDir");
-        //saveAs("Tiff", outDir+titleFluor);
         close();
-
-        //Process Phase channel
-        phase = getImageID();
-        selectImage(phase);
-        phaseName= getTitle();
-        titlePhase = replace(phaseName, extension, "xy");
-        rename(titlePhase);
-        run("Image Sequence... ", "format=TIFF name=["+titlePhase+timePrefix+"] save=&outDir");
-        close();
-        
-        
 	}
 }
 
