@@ -54,19 +54,25 @@ if preprocess
     disp("Preparing .tif files");
 
     filelist = dir('*.nd2');
+    colorNames = {'AdamPhase', 'AdamGreenEpi', 'AdamGreenEpi1'};
+
     for i = 1:numel(filelist)
         filename = filelist(i).name;
         image = BioformatsImage(filename);
         basename = split(filename, '.');
         xy = str2num(basename{1}(end-3:end));
 
-        for c = 1:(image.sizeC)
+        if not(isempty(setdiff(image.channelNames, colorNames)))
+            error('Set of provided colorNames are not the same as the names in the file');
+        end
+
+        for c = 1:size(colorNames)
             if image.sizeT == 1
                 for t = 1:(image.seriesCount)
                     if (t >= t_start) & (t <= t_end)
                         name = seggerTiffName(t, xy, c);
                         path = strjoin([folder, name], filesep);
-                        plane = getPlane(image, 1, c, 1, t);
+                        plane = getPlane(image, 1, colorNames{c}, 1, t);
                         imwrite(plane, path);
                     end
                 end
