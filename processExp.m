@@ -66,7 +66,10 @@ if preprocess
             error('Set of provided colorNames are not the same as the names in the file');
         end
 
-        for c = 1:size(colorNames)
+        cSize = size(colorNames);
+        cSize = cSize(2);
+
+        for c = 1:cSize
             if image.sizeT == 1
                 for t = 1:(image.seriesCount)
                     if (t >= t_start) & (t <= t_end)
