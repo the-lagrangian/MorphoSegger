@@ -37,42 +37,53 @@ tic
 %% 1. Preparing tif files using MIJ (Fiji-Matlab interface)
 
 if preprocess  
-    
+    % Select frames to analyze
+    t_start=1;
+    t_end=300;
+
     % Select folder with ND2 files
     disp('Select Folder with ND2 files:');
     dirname = uigetdir();
     dirname = fixDir(dirname);
 
-    %The macro converts ND2 files to tif for two separate channels. It performs 
-    %gaussian blur on the green channel if desired (check the macro code)
+    cd(dirname);
 
-    macroFile1='ConvertND2toTif.txt';
+    folder = strjoin(["Analysis"], filesep);
+    mkdir(folder);
 
-    % Call MIJ for preprocessing:
-    filepathMacro = getMacroPath(); %Macro Files path
+    disp("Preparing .tif files");
 
-    % Select frames to analyze
-    t_start=1;
-    t_end=300;
+    filelist = dir('*.nd2');
+    for i = 1:numel(filelist)
+        filename = filelist(i).name;
+        image = BioformatsImage(filename);
+        basename = split(filename, '.');
+        xy = str2num(basename{1}(end-3:end));
 
-    %calls MIJ to run the Fiji macro with arguments
-    args=strcat(dirname,';',num2str(t_start),';',num2str(t_end)); %group arguments
-    runMacro([filepathMacro,macroFile1],args); 
+        for c = 1:(image.sizeC)
+            if image.sizeT == 1
+                for t = 1:(image.seriesCount)
+                    if (t >= t_start) & (t <= t_end)
+                        name = seggerTiffName(t, xy, c);
+                        path = strjoin([folder, name], filesep);
+                        plane = getPlane(image, 1, c, 1, t);
+                        imwrite(plane, path);
+                    end
+                end
+            else
+                for t = 1:(image.sizeT)
+                    if (t >= t_start) & (t <= t_end)
+                        name = seggerTiffName(t, xy, c);
+                        path = strjoin([folder, name], filesep);
+                        plane = getPlane(image, 1, c, t);
+                        imwrite(plane, path);
+                    end
+                end
+            end
+        end
+    end
 
-end
-%% 2. Converting to SuperSegger naming format
-%
-% The previous script generates files in the following format:
-% 01xy - C=0_t0001.tif
-% 01xy - C=0_t0002.tif
-% ...
-% and converts to SuperSegger format:time, xy-positions, fluorescence
-% channel, where c1 is bright field or phase contrast  and c2,c3 etc are
-% different fluorescent channels
-%
-% t00001xy001c1.tif
-% t00002xy001c1.tif
-% etc ... without basename
+    disp(".tif files prepared");
 
 if naming  
     
@@ -97,6 +108,7 @@ if naming
         timeFilterAfter, xyFilterBefore,xyFilterAfter, channelNames )
 
 end
+
 %% 3. Setting segmentation constants and run SuperSegger
 %
 % Using correct resolution ensures correct pixel size and segmentation
@@ -239,7 +251,6 @@ if supersegger
     startEnd = [1 10];
     BatchSuperSeggerOpti( dirname, skip, cleanflag, CONST,startEnd);
 
-
 end
 %% 4. Clean up files (raw_im *.tif, original, *.tif)
 
@@ -280,5 +291,9 @@ disp(['Finished in ' num2str(round(10*t1/60)/10) ' minutes.']);
 load('handel') %alarm that the code is finished
 sound(y,Fs)
 end
+end
 
-
+function name = seggerTiffName(t, xy, c)
+    t = num2str(t, '%03.f');
+    name = ['t', t, 'xy', num2str(xy), 'c', num2str(c), '.tif'];
+end
