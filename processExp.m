@@ -84,7 +84,7 @@ if preprocess
                     if (t >= t_start) & (t <= t_end)
                         name = seggerTiffName(t, xy, c);
                         path = strjoin([folder, name], filesep);
-                        plane = getPlane(image, 1, c, t);
+                        plane = getPlane(image, 1, colorNames{c}, t);
                         imwrite(plane, path);
                     end
                 end
